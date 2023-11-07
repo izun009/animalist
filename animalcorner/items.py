@@ -7,5 +7,5 @@ import scrapy
 
 class AnimalcornerItem(scrapy.Item):
     name = scrapy.Field()
-    fact = scrapy.Field()
+    facts = scrapy.Field()
     #image_urls = scrapy.Field()
