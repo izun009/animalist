@@ -11,72 +11,120 @@ class AnimalsSpider(scrapy.Spider):
         for anim in animals_link:
             yield response.follow(anim, self.parse_animals)
 
+
     # def parse_animals(self, response):
     #     item = AnimalcornerItem()
+    #     item['name'] = response.css('h1.entry-title::text').get()
 
-    #     item['name'] = response.css("h1.entry-title::text").get()
-    #     animal_name = item['name']
-    #     #header_facts = response.css('div.entry-content h2.wp-block-heading, div.entry-content h3.wp-block-heading, div.entry-content h4.wp-block-heading, div.entry-content h5.wp-block-heading, div.entry-content h6.wp-block-heading::text')
-    #     header_facts = response.css('div.entry-content h2, div.entry-content h3, div.entry-content h4, div.entry-content h5, div.entry-content h6')
-        
-    #     # if not header_facts:
-    #     #     item['fact'] = "Fact about "+animal_name
+    #     for entry_content in response.css('div.entry-content'):
+    #         all_data = []
 
-    #     for header in header_facts:
-    #         #item = AnimalcornerItem()
-    #         header_text = header.css('::text').get()
-    #         item['fact'] = header_text
-    #     #item['fact'] = response.css("h3.wp-block-heading::text").get()
+    #         # Check if there is a heading immediately following the title
+    #         first_heading = entry_content.xpath('h1/following-sibling::h2[1] | h1/following-sibling::h3[1]')
+
+    #         if first_heading:
+    #             # Scrape the first heading after the title
+    #             introductory_paragraphs = entry_content.xpath('h1/following-sibling::h2[1]/preceding-sibling::p | h1/following-sibling::h3[1]/preceding-sibling::p')
+    #         else:
+    #             # Scrape the introductory <p> tags if there is no heading
+    #             introductory_paragraphs = entry_content.xpath('h1/following-sibling::p')
+
+    #         for paragraph in introductory_paragraphs:
+    #             text = paragraph.get()
+    #             all_data.append({"p": text})
+
+    #         # Reset current_h2 and current_h3
+    #         current_h2 = None
+    #         current_h3 = None
+
+    #         for element in entry_content.css('h2, h3, p'):
+    #             tag = element.root.tag
+    #             text = element.get()
+
+    #             if tag == 'h2':
+    #                 # Append the previous h2 data and reset subheadings
+    #                 if current_h2:
+    #                     all_data.append(current_h2)
+    #                 current_h2 = {"h2": text, "description_h2": [], "subheadings": []}
+    #                 current_h3 = None
+    #             elif tag == 'h3':
+    #                 # Append the previous h3 data
+    #                 if current_h3:
+    #                     current_h2["subheadings"].append(current_h3)
+    #                 current_h3 = {"h3": text, "description_h3": []}
+    #             elif tag == 'p':
+    #                 if current_h3:
+    #                     current_h3["description_h3"].append(text)
+    #                 elif current_h2:
+    #                     current_h2["description_h2"].append(text)
+
+    #         # Append the last h2 data
+    #         if current_h2:
+    #             all_data.append(current_h2)
+
+    #         item["facts"] = all_data
 
     #     yield item
 
+
+
     def parse_animals(self, response):
         item = AnimalcornerItem()
-        item['name'] = response.css("h1.entry-title::text").get()
-        animal_name = item['name']
+        item['name'] = response.css('h1.entry-title::text').get()
+        facts = []
 
         for entry_content in response.css('div.entry-content'):
+            all_data = []
 
-            all_headings = []
+            # Check if there is a heading immediately following the title
+            first_heading = entry_content.xpath('h1/following-sibling::h2[1] | h1/following-sibling::h3[1]')
 
+            if first_heading:
+                # Scrape the first heading after the title
+                first_heading = first_heading[0].get()
+                all_data.append({"h2": first_heading})
+
+            # Scrape introductory <p> tags after the name of the animal
+            introductory_data = entry_content.xpath('h1/following-sibling::p | h1/following-sibling::text()[not(following-sibling::h2 | following-sibling::h3)]')
+
+            for data in introductory_data:
+                text = data.get()
+                all_data.append({"description_h2": [text]})
+
+            # Reset current_h2 and current_h3
             current_h2 = None
             current_h3 = None
 
-            for element in entry_content.css('h2, h3'):
+            for element in entry_content.css('h2, h3, p'):
                 tag = element.root.tag
                 text = element.get()
 
                 if tag == 'h2':
-                    # Check if current_h3 is defined and has content
-                    if current_h3 and current_h3["text"]:
-                        # Append current_h3 to current_h2
-                        if "subheadings" not in current_h2:
-                            current_h2["subheadings"] = []
-                        current_h2["subheadings"].append(current_h3)
-                    
-                    # Append current_h2 to all_headings
-                    if current_h2 and current_h2["text"]:
-                        all_headings.append(current_h2)
-                    
-                    # Initialize current_h2
-                    current_h2 = {"text": text, "subheadings": []}
+                    # Append the previous h2 data and reset subheadings
+                    if current_h2:
+                        all_data.append(current_h2)
+                    current_h2 = {"h2": text, "description_h2": [], "subheadings": []}
                     current_h3 = None
                 elif tag == 'h3':
-                    # Check if current_h3 is defined and has content
-                    if current_h3 and current_h3["text"]:
-                        # Append current_h3 to current_h2
-                        if "subheadings" not in current_h2:
-                            current_h2["subheadings"] = []
+                    # Append the previous h3 data
+                    if current_h3:
                         current_h2["subheadings"].append(current_h3)
-                    
-                    # Initialize current_h3
-                    current_h3 = {"text": text}
+                    current_h3 = {"h3": text, "description_h3": []}
+                elif tag == 'p':
+                    if current_h3:
+                        current_h3["description_h3"].append(text)
+                    elif current_h2:
+                        current_h2["description_h2"].append(text)
 
-            # Append the last current_h2
-            if current_h2 and current_h2["text"]:
-                all_headings.append(current_h2)
+            # Append the last h2 data
+            if current_h2:
+                all_data.append(current_h2)
 
-            item["facts"] = all_headings
+            # Check if there are any facts scraped
+            if all_data:
+                facts.extend(all_data)
 
-
+        item["facts"] = facts
         yield item
+
+       

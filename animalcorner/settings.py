@@ -19,7 +19,6 @@ USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101 Firefox/102
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
-CLOSESPIDER_ITEMCOUNT = 5
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
@@ -64,9 +63,14 @@ CLOSESPIDER_ITEMCOUNT = 5
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    "animalcorner.pipelines.AnimalcornerPipeline": 300,
-#}
+ITEM_PIPELINES = {
+   "animalcorner.pipelines.MongoDBPipeline": 300,
+}
+
+MONGODB_URI = 'mongodb://izzun:1234@0.0.0.0:27017/'
+MONGODB_DATABASE = 'animals_corner'
+MONGODB_COLLECTION = 'animals'
+CLOSESPIDER_ITEMCOUNT = 5
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
