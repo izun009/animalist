@@ -8,6 +8,7 @@ import scrapy
 class AnimalcornerItem(scrapy.Item):
     name = scrapy.Field()
     facts = scrapy.Field()
+    introduction = scrapy.Field()
     #image_urls = scrapy.Field()
 
 class H2Item(scrapy.Item):
