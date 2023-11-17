@@ -19,3 +19,7 @@ class H2Item(scrapy.Item):
 class H3Item(scrapy.Item):
     h3 = scrapy.Field()
     description_h3 = scrapy.Field()
+
+class AnimalcornerFactsItem(scrapy.Item):
+    fact = scrapy.Field()
+    description = scrapy.Field()
