@@ -18,11 +18,11 @@ class AnimalsSpider(scrapy.Spider):
         item['introduction'] = []
         item['facts'] = []
 
-        current_h = None  # Rename current_h2 to current_h for more generality
+        current_h = None
 
         for element in response.css('div.entry-content p, div.entry-content h2, div.entry-content h3, div.entry-content h4'):
             tag = element.root.tag
-            text = element.css('::text').get().strip()
+            text = element.xpath('normalize-space(string())').get()
             
             if tag in ['h2', 'h3', 'h4']:
                 # Append the previous data and reset subtags
