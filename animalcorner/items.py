@@ -14,9 +14,6 @@ class AnimalcornerItem(scrapy.Item):
 class AnimalcornerFactsItem(scrapy.Item):
     heading = scrapy.Field()
     description = scrapy.Field()
-    subheadings = scrapy.Field()
-
-
 
 # class AnimalcornerItem(scrapy.Item):
 #     name = scrapy.Field()
