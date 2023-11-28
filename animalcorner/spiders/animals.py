@@ -23,33 +23,33 @@ class AnimalsSpider(scrapy.Spider):
         current_h4 = None
 
         for element in response.css('div.entry-content p, div.entry-content h2, div.entry-content h3, div.entry-content h4'):
-            heading = element.root.tag
+            tags = element.root.tag
             text = element.get()
 
-            if heading == 'h2':
-                # Append the previous h2 data and reset subheadings
+            if tags == 'h2':
+                # Append the previous h2 data and reset subtagss
                 if current_h2:
                     item['facts'].append(current_h2)
-                current_h2 = {"h2": text, "description_h2": []}
+                current_h2 = {"h2": text, "description": []}
                 current_h3 = None
                 current_h4 = None
-            elif heading == 'h3':
+            elif tags == 'h3':
                 # Append the previous h3 data
                 if current_h3:
                     item['facts'].append(current_h3)
-                current_h3 = {"h3": text, "description_h3": []}
+                current_h3 = {"h3": text, "description": []}
                 current_h4 = None
-            elif heading == 'h4':
+            elif tags == 'h4':
                 if current_h4:
                     item['facts'].append(current_h4)
-                current_h4 = {"h4": text, "description_h4": []}
-            elif heading == 'p':
+                current_h4 = {"h4": text, "description": []}
+            elif tags == 'p':
                 if current_h2:
-                    current_h2["description_h2"].append(text)
+                    current_h2["description"].append(text)
                 elif current_h3:
-                    current_h3["description_h3"].append(text)
+                    current_h3["description"].append(text)
                 elif current_h4:
-                    current_h4["description_h4"].append(text)
+                    current_h4["description"].append(text)
                 else:
                     item["introduction"].append({'p': text})
 
