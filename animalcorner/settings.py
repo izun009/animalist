@@ -15,7 +15,7 @@ NEWSPIDER_MODULE = "animalcorner.spiders"
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = "animalcorner (+http://www.yourdomain.com)"
-USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101 Firefox/102.0"
+USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36"
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
@@ -26,7 +26,7 @@ ROBOTSTXT_OBEY = True
 # Configure a delay for requests for the same website (default: 0)
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-#DOWNLOAD_DELAY = 3
+#DOWNLOAD_DELAY = 10
 # The download delay setting will honor only one of:
 #CONCURRENT_REQUESTS_PER_DOMAIN = 16
 #CONCURRENT_REQUESTS_PER_IP = 16
@@ -68,9 +68,10 @@ ITEM_PIPELINES = {
 }
 
 MONGODB_URI = 'mongodb://izzun:1234@0.0.0.0:27017/'
-MONGODB_DATABASE = 'animals_corner'
-MONGODB_COLLECTION = 'animals'
-CLOSESPIDER_ITEMCOUNT = 5
+MONGODB_DATABASE = 'animals'
+MONGODB_COLLECTION = 'animalsList'
+
+#CLOSESPIDER_ITEMCOUNT = 5
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html

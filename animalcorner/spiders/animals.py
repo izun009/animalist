@@ -19,24 +19,27 @@ class AnimalsSpider(scrapy.Spider):
         item['facts'] = []
 
         current_h = None
+        current_h_has_description = False
 
         for element in response.css('div.entry-content p, div.entry-content h2, div.entry-content h3, div.entry-content h4'):
             tag = element.root.tag
             text = element.xpath('normalize-space(string())').get()
-            
+
             if tag in ['h2', 'h3', 'h4']:
                 # Append the previous data and reset subtags
-                if current_h:
+                if current_h and current_h_has_description:
                     item['facts'].append(current_h)
                 current_h = {tag: text, "description": []}
+                current_h_has_description = False
             elif tag == 'p':
                 if current_h:
                     current_h["description"].append(text)
+                    current_h_has_description = True
                 else:
                     item["introduction"].append({'p': text})
 
         # Append the last heading data
-        if current_h:
+        if current_h and current_h_has_description:
             item['facts'].append(current_h)
 
         yield item
