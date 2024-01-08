@@ -42,4 +42,6 @@ class AnimalsSpider(scrapy.Spider):
         if current_h and current_h_has_description:
             item['facts'].append(current_h)
 
+        # item['endpoint'] = response.xpath('//meta[@property="og:url"]/@content').get()
+
         yield item
