@@ -67,11 +67,11 @@ ITEM_PIPELINES = {
    "animalcorner.pipelines.MongoDBPipeline": 300,
 }
 
-MONGODB_URI = 'mongodb://izzun:1234@0.0.0.0:27017/'
+MONGODB_URI = 'mongodb://root:root@0.0.0.0:27071/?directConnection=true'
 MONGODB_DATABASE = 'animals'
 MONGODB_COLLECTION = 'animalsList'
 
-#CLOSESPIDER_ITEMCOUNT = 5
+CLOSESPIDER_ITEMCOUNT = 5
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
