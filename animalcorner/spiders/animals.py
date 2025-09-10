@@ -15,6 +15,7 @@ class AnimalsSpider(scrapy.Spider):
     def parse_animals(self, response):
         item = AnimalcornerItem()
         item['name'] = response.css('header.entry-header h1.entry-title::text').get()
+        item['images'] = response.css('div.featured-image-wrapper img::attr(data-breeze)').getall()
         item['introduction'] = []
         item['facts'] = []
 

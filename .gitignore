@@ -1,2 +1,10 @@
 db.sqlite3
 *.pyc
+env/
+__pycache__/
+*.log
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*.swo
