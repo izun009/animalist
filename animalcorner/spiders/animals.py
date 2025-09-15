@@ -15,9 +15,12 @@ class AnimalsSpider(scrapy.Spider):
     def parse_animals(self, response):
         item = AnimalcornerItem()
         item['name'] = response.css('header.entry-header h1.entry-title::text').get()
+        item['endpoint'] = response.url
         item['images'] = response.css('div.featured-image-wrapper img::attr(data-breeze)').getall()
         item['introduction'] = []
         item['facts'] = []
+
+        #item['endpoint'] = response.xpath('//meta[@property="og:url"]/@content').get()
 
         current_h = None
         current_h_has_description = False
@@ -42,7 +45,5 @@ class AnimalsSpider(scrapy.Spider):
         # Append the last heading data
         if current_h and current_h_has_description:
             item['facts'].append(current_h)
-
-        # item['endpoint'] = response.xpath('//meta[@property="og:url"]/@content').get()
 
         yield item
