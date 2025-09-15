@@ -26,7 +26,7 @@ CLOSESPIDER_PAGECOUNT = 10 # limit the number of pages to crawl
 # Configure a delay for requests for the same website (default: 0)
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-#DOWNLOAD_DELAY = 10
+DOWNLOAD_DELAY = 10
 # The download delay setting will honor only one of:
 #CONCURRENT_REQUESTS_PER_DOMAIN = 16
 #CONCURRENT_REQUESTS_PER_IP = 16
@@ -65,9 +65,10 @@ CLOSESPIDER_PAGECOUNT = 10 # limit the number of pages to crawl
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
    "animalcorner.pipelines.MongoDBPipeline": 300,
+   "animalcorner.pipelines.DuplicatesPipeline": 300,
 }
 
-MONGODB_URI = 'mongodb://root:root@0.0.0.0:27071/?directConnection=true'
+MONGODB_URI = 'mongodb://izzun:1234@0.0.0.0:27017/?directConnection=true'
 MONGODB_DATABASE = 'animals'
 MONGODB_COLLECTION = 'animalsList'
 
