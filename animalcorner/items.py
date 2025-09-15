@@ -12,3 +12,4 @@ class AnimalcornerItem(scrapy.Item):
     facts = scrapy.Field()
     description = scrapy.Field()
     images = scrapy.Field()
+    endpoint = scrapy.Field()

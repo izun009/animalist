@@ -5,8 +5,22 @@
 
 
 # useful for handling different item types with a single interface
-from itemadapter import ItemAdapter
 import pymongo
+from scrapy.exceptions import DropItem
+from itemadapter import ItemAdapter
+
+class DuplicatesPipeline:
+    def __init__(self):
+        self.seen = set()  # memory only (resets every run)
+
+    def process_item(self, item, spider):
+        endpoint = item.get("endpoint") # unique identifier
+
+        if endpoint in self.seen:
+            raise DropItem(f"Duplicate item found: {endpoint}")
+        else:
+            self.seen.add(endpoint)
+            return item
 
 class MongoDBPipeline:
     def __init__(self, mongo_uri, mongo_db, mongo_collection):
