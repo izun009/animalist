@@ -64,13 +64,14 @@ DOWNLOAD_DELAY = 10
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-   "animalcorner.pipelines.MongoDBPipeline": 300,
+   #"animalcorner.pipelines.MongoDBPipeline": 300,
    "animalcorner.pipelines.DuplicatesPipeline": 300,
+   "animalcorner.pipelines.PostgresPipeline": 300
 }
 
-MONGODB_URI = 'mongodb://izzun:1234@0.0.0.0:27017/?directConnection=true'
-MONGODB_DATABASE = 'animals'
-MONGODB_COLLECTION = 'animalsList'
+#MONGODB_URI = 'mongodb://izzun:1234@0.0.0.0:27017/?directConnection=true'
+#MONGODB_DATABASE = 'animals'
+#MONGODB_COLLECTION = 'animalsList'
 
 CLOSESPIDER_ITEMCOUNT = 5
 

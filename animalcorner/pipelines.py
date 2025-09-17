@@ -5,7 +5,8 @@
 
 
 # useful for handling different item types with a single interface
-import pymongo
+import pymongo, psycopg2
+from psycopg2.extras import Json
 from scrapy.exceptions import DropItem
 from itemadapter import ItemAdapter
 
@@ -22,28 +23,60 @@ class DuplicatesPipeline:
             self.seen.add(endpoint)
             return item
 
-class MongoDBPipeline:
-    def __init__(self, mongo_uri, mongo_db, mongo_collection):
-        self.mongo_uri = mongo_uri
-        self.mongo_db = mongo_db
-        self.mongo_collection = mongo_collection
-
-    @classmethod
-    def from_crawler(cls, crawler):
-        return cls(
-            mongo_uri=crawler.settings.get('MONGODB_URI'),
-            mongo_db=crawler.settings.get('MONGODB_DATABASE'),
-            mongo_collection=crawler.settings.get('MONGODB_COLLECTION')
-        )
-
+class PostgresPipeline:
     def open_spider(self, spider):
-        self.client = pymongo.MongoClient(self.mongo_uri)
-        self.db = self.client[self.mongo_db]
-        self.collection = self.db[self.mongo_collection]
+        self.conn = psycopg2.connect(
+            dbname="animalsdb",
+            user="animals",
+            password="P455w0rd53cr3t",
+            host="localhost",
+            port="5432"
+        )
+        self.cur = self.conn.cursor()
 
     def close_spider(self, spider):
-        self.client.close()
+        self.conn.commit()
+        self.cur.close()
+        self.conn.close()
 
     def process_item(self, item, spider):
-        self.db[self.mongo_collection].insert_one(dict(item))
+        self.cur.execute("""
+            INSERT INTO animals (name, images, introduction, facts, endpoint)
+            VALUES (%s, %s, %s, %s, %s)
+            ON CONFLICT (endpoint) DO NOTHING
+        """, (
+            item.get("name"),
+            item.get("images"),
+            Json(item.get("introduction")),
+            Json(item.get("facts")),
+            item.get("endpoint")
+        ))
+        self.conn.commit()
         return item
+
+
+# class MongoDBPipeline:
+#     def __init__(self, mongo_uri, mongo_db, mongo_collection):
+#         self.mongo_uri = mongo_uri
+#         self.mongo_db = mongo_db
+#         self.mongo_collection = mongo_collection
+
+#     @classmethod
+#     def from_crawler(cls, crawler):
+#         return cls(
+#             mongo_uri=crawler.settings.get('MONGODB_URI'),
+#             mongo_db=crawler.settings.get('MONGODB_DATABASE'),
+#             mongo_collection=crawler.settings.get('MONGODB_COLLECTION')
+#         )
+
+#     def open_spider(self, spider):
+#         self.client = pymongo.MongoClient(self.mongo_uri)
+#         self.db = self.client[self.mongo_db]
+#         self.collection = self.db[self.mongo_collection]
+
+#     def close_spider(self, spider):
+#         self.client.close()
+
+#     def process_item(self, item, spider):
+#         self.db[self.mongo_collection].insert_one(dict(item))
+#         return item
