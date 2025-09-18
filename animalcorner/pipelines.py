@@ -24,12 +24,32 @@ class DuplicatesPipeline:
             return item
 
 class PostgresPipeline:
+
+    def __init__(self):
+        hostname='localhost'
+        db='animalsdb'
+        user='animals'
+        password='P455w0rd53cr3t'
+        port='5432'
+
+        self.conn = psycopg2.connect(host=hostname,user=user,password=password,dbname=db)
+        self.cur = self.conn.cursor()
+        self.cur.execute("""
+            CREATE TABLE IF NOT EXISTS animals( 
+            id int GENERATED ALWAYS AS IDENTITY PRIMARY KEY, 
+            name varchar(100) not null, 
+            introduction TEXT not null, 
+            facts TEXT not null, 
+            endpoint varchar(255) not null, 
+            images varchar(255) not null)""")
+    
+
     def open_spider(self, spider):
         self.conn = psycopg2.connect(
             dbname="animalsdb",
             user="animals",
             password="P455w0rd53cr3t",
-            host="localhost",
+            host="0.0.0.0",
             port="5432"
         )
         self.cur = self.conn.cursor()
