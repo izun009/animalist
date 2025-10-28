@@ -9,6 +9,10 @@ import pymongo, psycopg2
 from psycopg2.extras import Json
 from scrapy.exceptions import DropItem
 from itemadapter import ItemAdapter
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 class DuplicatesPipeline:
     def __init__(self):
@@ -24,55 +28,51 @@ class DuplicatesPipeline:
             return item
 
 class PostgresPipeline:
-
     def __init__(self):
-        hostname='localhost'
-        db='animalsdb'
-        user='animals'
-        password='P455w0rd53cr3t'
-        port='5432'
-
-        self.conn = psycopg2.connect(host=hostname,user=user,password=password,dbname=db)
-        self.cur = self.conn.cursor()
-        self.cur.execute("""
-            CREATE TABLE IF NOT EXISTS animals( 
-            id int GENERATED ALWAYS AS IDENTITY PRIMARY KEY, 
-            name varchar(100) not null, 
-            introduction TEXT not null, 
-            facts TEXT not null, 
-            endpoint varchar(255) not null, 
-            images varchar(255) not null)""")
-    
-
-    def open_spider(self, spider):
         self.conn = psycopg2.connect(
-            dbname="animalsdb",
-            user="animals",
-            password="P455w0rd53cr3t",
-            host="0.0.0.0",
-            port="5432"
+            host=os.getenv("DB_HOST"),
+            dbname=os.getenv("DB_NAME"),
+            user=os.getenv("DB_USER"),
+            password=os.getenv("DB_PASS"),
+            port=os.getenv("DB_PORT", 5432)
         )
         self.cur = self.conn.cursor()
-
-    def close_spider(self, spider):
+        self.cur.execute("""
+            CREATE TABLE IF NOT EXISTS animals (
+                id SERIAL PRIMARY KEY,
+                name TEXT NOT NULL,
+                images JSONB,
+                introduction JSONB,
+                facts JSONB,
+                endpoint TEXT UNIQUE
+            )
+        """)
         self.conn.commit()
-        self.cur.close()
-        self.conn.close()
 
     def process_item(self, item, spider):
-        self.cur.execute("""
-            INSERT INTO animals (name, images, introduction, facts, endpoint)
-            VALUES (%s, %s, %s, %s, %s)
-            ON CONFLICT (endpoint) DO NOTHING
-        """, (
-            item.get("name"),
-            item.get("images"),
-            Json(item.get("introduction")),
-            Json(item.get("facts")),
-            item.get("endpoint")
-        ))
-        self.conn.commit()
+        try:
+            self.cur.execute("""
+                INSERT INTO animals (name, images, introduction, facts, endpoint)
+                VALUES (%s, %s, %s, %s, %s)
+                ON CONFLICT (endpoint) DO NOTHING
+            """, (
+                item.get("name"),
+                Json(item.get("images")),
+                Json(item.get("introduction")),
+                Json(item.get("facts")),
+                item.get("endpoint")
+            ))
+            self.conn.commit()
+
+        except Exception as e:
+            spider.logger.error(f"❌ Error inserting item: {e}")
+            self.conn.rollback()  # prevent 'InFailedSqlTransaction'
+
         return item
+
+    def close_spider(self, spider):
+        self.cur.close()
+        self.conn.close()
 
 
 # class MongoDBPipeline:
