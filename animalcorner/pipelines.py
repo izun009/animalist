@@ -6,6 +6,7 @@
 
 # useful for handling different item types with a single interface
 import pymongo, psycopg2
+from datetime import datetime
 from psycopg2.extras import Json
 from scrapy.exceptions import DropItem
 from itemadapter import ItemAdapter
@@ -37,30 +38,35 @@ class PostgresPipeline:
             port=os.getenv("DB_PORT", 5432)
         )
         self.cur = self.conn.cursor()
-        self.cur.execute("""
-            CREATE TABLE IF NOT EXISTS animals (
-                id SERIAL PRIMARY KEY,
-                name TEXT NOT NULL,
-                images JSONB,
-                introduction JSONB,
-                facts JSONB,
-                endpoint TEXT UNIQUE
-            )
-        """)
+        # self.cur.execute("""
+        #     CREATE TABLE IF NOT EXISTS animals (
+        #         id SERIAL PRIMARY KEY,
+        #         name TEXT NOT NULL,
+        #         images JSONB,
+        #         introduction JSONB,
+        #         facts JSONB,
+        #         endpoint TEXT UNIQUE
+        #     )
+        # """)
         self.conn.commit()
 
     def process_item(self, item, spider):
+        now = datetime.utcnow()
+        DEFAULT_OWNER_ID = 1
         try:
             self.cur.execute("""
-                INSERT INTO animals (name, images, introduction, facts, endpoint)
-                VALUES (%s, %s, %s, %s, %s)
+                INSERT INTO animals (name, images, introduction, facts, endpoint, owner_id, created_at, updated_at)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
                 ON CONFLICT (endpoint) DO NOTHING
             """, (
                 item.get("name"),
                 Json(item.get("images")),
                 Json(item.get("introduction")),
                 Json(item.get("facts")),
-                item.get("endpoint")
+                item.get("endpoint"),
+                DEFAULT_OWNER_ID,
+                now,
+                now
             ))
             self.conn.commit()
 
