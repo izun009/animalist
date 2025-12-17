@@ -23,8 +23,13 @@ class PostgresPipeline:
         now = datetime.utcnow()
         DEFAULT_OWNER_ID = 1
 
+        intro = item.get("introduction")
+        if isinstance(intro, dict):
+           intro = intro.get("p")
+        item["introduction"] = intro
+
         try:
-            # 1️⃣ Insert animal
+            #1 Insert animal
             self.cur.execute("""
                 INSERT INTO animals (name, endpoint, introduction, owner_id, created_at, updated_at)
                 VALUES (%s, %s, %s, %s, %s, %s)
@@ -34,7 +39,7 @@ class PostgresPipeline:
             """, (
                 item["name"],
                 item["endpoint"],
-                item.get("introduction"),
+                item["introduction"],
                 DEFAULT_OWNER_ID,
                 now,
                 now
@@ -46,13 +51,12 @@ class PostgresPipeline:
 
             animal_id = result[0]
 
-            # 2️⃣ Insert facts
+            #2 Insert facts
             facts = item.get("facts", [])
 
             for position, fact in enumerate(facts, start=1):
 
                 title = fact.get("title")
-
                 description = fact.get("description")
 
                 # Normalize description
@@ -72,18 +76,7 @@ class PostgresPipeline:
                     position
                 ))
 
-            # for position, fact in enumerate(item.get("facts", []), start=1):
-            #     self.cur.execute("""
-            #         INSERT INTO animal_facts (animal_id, title, description, position)
-            #         VALUES (%s, %s, %s, %s)
-            #     """, (
-            #         animal_id,
-            #         fact["title"],
-            #         fact["description"],
-            #         position
-            #     ))
-
-            # 3️⃣ Insert images
+            #3 Insert images
             for img_url in item.get("images", []):
                 self.cur.execute("""
                     INSERT INTO animal_images (animal_id, url)
