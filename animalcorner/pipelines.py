@@ -6,7 +6,6 @@ import os
 
 load_dotenv()
 
-
 class PostgresPipeline:
 
     def __init__(self):
@@ -94,7 +93,7 @@ class PostgresPipeline:
             raise
 
         except Exception as e:
-            spider.logger.error(f"❌ DB error: {e}")
+            spider.logger.error(f"DB error: {e}")
             self.conn.rollback()
             raise DropItem("Database error")
 
