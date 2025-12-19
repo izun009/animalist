@@ -19,14 +19,14 @@ USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTM
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
-CLOSESPIDER_PAGECOUNT = 10 # limit the number of pages to crawl
+CLOSESPIDER_PAGECOUNT = 5 # limit the number of pages to crawl
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
 
 # Configure a delay for requests for the same website (default: 0)
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-DOWNLOAD_DELAY = 10
+DOWNLOAD_DELAY = 5
 # The download delay setting will honor only one of:
 #CONCURRENT_REQUESTS_PER_DOMAIN = 16
 #CONCURRENT_REQUESTS_PER_IP = 16
@@ -64,13 +64,14 @@ DOWNLOAD_DELAY = 10
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-   "animalcorner.pipelines.MongoDBPipeline": 300,
-   "animalcorner.pipelines.DuplicatesPipeline": 300,
+   #"animalcorner.pipelines.MongoDBPipeline": 300,
+   #"animalcorner.pipelines.DuplicatesPipeline": 300,
+   "animalcorner.pipelines.PostgresPipeline": 300
 }
 
-MONGODB_URI = 'mongodb://izzun:1234@0.0.0.0:27017/?directConnection=true'
-MONGODB_DATABASE = 'animals'
-MONGODB_COLLECTION = 'animalsList'
+#MONGODB_URI = 'mongodb://izzun:1234@0.0.0.0:27017/?directConnection=true'
+#MONGODB_DATABASE = 'animals'
+#MONGODB_COLLECTION = 'animalsList'
 
 CLOSESPIDER_ITEMCOUNT = 5
 
