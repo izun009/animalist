@@ -11,39 +11,56 @@ class AnimalsSpider(scrapy.Spider):
         for anim in animals_link:
             yield response.follow(anim, self.parse_animals)
 
-    # scrape name, facts, image_urls, and endpoint
     def parse_animals(self, response):
         item = AnimalcornerItem()
-        item['name'] = response.css('header.entry-header h1.entry-title::text').get()
-        item['endpoint'] = response.url
-        item['images'] = response.css('div.featured-image-wrapper img::attr(data-breeze)').getall()
-        item['introduction'] = []
-        item['facts'] = []
+        item["name"] = response.css(
+            "header.entry-header h1.entry-title::text"
+        ).get()
+        item["endpoint"] = response.url
+        item["images"] = response.css(
+            "div.featured-image-wrapper img::attr(data-breeze)"
+        ).getall()
 
-        #item['endpoint'] = response.xpath('//meta[@property="og:url"]/@content').get()
+        introduction_buffer = []
+        facts = []
 
-        current_h = None
-        current_h_has_description = False
+        current_heading = None
+        current_description_buffer = []
 
-        for element in response.css('div.entry-content p, div.entry-content h2, div.entry-content h3, div.entry-content h4'):
+        for element in response.css(
+            "div.entry-content p, div.entry-content h2, div.entry-content h3, div.entry-content h4"
+        ):
             tag = element.root.tag
-            text = element.xpath('normalize-space(string())').get()
+            text = element.xpath("normalize-space(string())").get()
 
-            if tag in ['h2', 'h3', 'h4']:
-                # Append the previous data and reset subtags
-                if current_h and current_h_has_description:
-                    item['facts'].append(current_h)
-                current_h = {tag: text, "description": []}
-                current_h_has_description = False
-            elif tag == 'p':
-                if current_h:
-                    current_h["description"].append(text)
-                    current_h_has_description = True
+            if tag in ["h2", "h3", "h4"]:
+                # finalize previous heading
+                if current_heading and current_description_buffer:
+                    facts.append({
+                        "title": current_heading,
+                        "description": " ".join(current_description_buffer)
+                    })
+
+                current_heading = text
+                current_description_buffer = []
+
+            elif tag == "p":
+                if current_heading:
+                    current_description_buffer.append(text)
                 else:
-                    item["introduction"].append({'p': text})
+                    introduction_buffer.append(text)
 
-        # Append the last heading data
-        if current_h and current_h_has_description:
-            item['facts'].append(current_h)
+        # finalize last heading
+        if current_heading and current_description_buffer:
+            facts.append({
+                "title": current_heading,
+                "description": " ".join(current_description_buffer)
+            })
+
+        item["introduction"] = {
+            "p": " ".join(introduction_buffer)
+        }
+
+        item["facts"] = facts
 
         yield item
