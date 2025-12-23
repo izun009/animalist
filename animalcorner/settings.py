@@ -6,28 +6,26 @@
 #     https://docs.scrapy.org/en/latest/topics/settings.html
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 BOT_NAME = "animalcorner"
 
 SPIDER_MODULES = ["animalcorner.spiders"]
 NEWSPIDER_MODULE = "animalcorner.spiders"
 
-
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = "animalcorner (+http://www.yourdomain.com)"
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36"
 
+username = os.getenv("USERNAME_PROXY")
+password = os.getenv("PASSWORD_PROXY")
 PROXY_LIST = [
-     'http://pmjxcwog:ktzy8pauoz7w@142.111.48.253:7030',
-     'http://pmjxcwog:ktzy8pauoz7w@31.59.20.176:6754',
-     'http://pmjxcwog:ktzy8pauoz7w@23.95.150.145:6114'
-#     'http://pmjxcwog:ktzy8pauoz7w@198.23.239.134:6540',
-#     'http://pmjxcwog:ktzy8pauoz7w@107.172.163.27:6543',
-#     'http://pmjxcwog:ktzy8pauoz7w@198.105.121.200:6462',
-#     'http://pmjxcwog:ktzy8pauoz7w@64.137.96.74:6641',
-#     'http://pmjxcwog:ktzy8pauoz7w@84.247.60.125:6095',
-#     'http://pmjxcwog:ktzy8pauoz7w@216.10.27.159:6837',
-#     'http://pmjxcwog:ktzy8pauoz7w@142.111.67.146:5611'
+     f"http://{username}:{password}@142.111.48.253:7030",
+     f"http://{username}:{password}@31.59.20.176:6754",
+     f"http://{username}:{password}@23.95.150.145:6114"
 ]
 ROTATING_PROXY_LIST = PROXY_LIST
 
