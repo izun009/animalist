@@ -17,6 +17,23 @@ NEWSPIDER_MODULE = "animalcorner.spiders"
 #USER_AGENT = "animalcorner (+http://www.yourdomain.com)"
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36"
 
+PROXY_LIST = [
+     'http://pmjxcwog:ktzy8pauoz7w@142.111.48.253:7030',
+     'http://pmjxcwog:ktzy8pauoz7w@31.59.20.176:6754',
+     'http://pmjxcwog:ktzy8pauoz7w@23.95.150.145:6114'
+#     'http://pmjxcwog:ktzy8pauoz7w@198.23.239.134:6540',
+#     'http://pmjxcwog:ktzy8pauoz7w@107.172.163.27:6543',
+#     'http://pmjxcwog:ktzy8pauoz7w@198.105.121.200:6462',
+#     'http://pmjxcwog:ktzy8pauoz7w@64.137.96.74:6641',
+#     'http://pmjxcwog:ktzy8pauoz7w@84.247.60.125:6095',
+#     'http://pmjxcwog:ktzy8pauoz7w@216.10.27.159:6837',
+#     'http://pmjxcwog:ktzy8pauoz7w@142.111.67.146:5611'
+]
+ROTATING_PROXY_LIST = PROXY_LIST
+
+RETRY_ENABLED = True
+RETRY_TIMES = 5
+
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
 CLOSESPIDER_PAGECOUNT = 5 # limit the number of pages to crawl
@@ -51,9 +68,11 @@ DOWNLOAD_DELAY = 5
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
-#DOWNLOADER_MIDDLEWARES = {
-#    "animalcorner.middlewares.AnimalcornerDownloaderMiddleware": 543,
-#}
+DOWNLOADER_MIDDLEWARES = {
+    "animalcorner.middlewares.AnimalcornerDownloaderMiddleware": 100,
+    'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 110,
+    'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
+}
 
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
