@@ -34,7 +34,7 @@ class PostgresPipeline:
                 VALUES (%s, %s, %s, %s, %s, %s)
                 ON CONFLICT (endpoint)
                 DO UPDATE SET updated_at = EXCLUDED.updated_at
-                RETURNING id
+                RETURNING a_id
             """, (
                 item["name"],
                 item["endpoint"],
@@ -76,13 +76,14 @@ class PostgresPipeline:
                 ))
 
             #3 Insert images
-            for img_url in item.get("images", []):
+            for position, img_url in enumerate(item.get("images", []), start=1):
                 self.cur.execute("""
-                    INSERT INTO animal_images (animal_id, url)
-                    VALUES (%s, %s)
+                    INSERT INTO animal_images (animal_id, image_url, position)
+                    VALUES (%s, %s, %s) ON CONFLICT DO NOTHING
                 """, (
                     animal_id,
-                    img_url
+                    img_url,
+                    position
                 ))
 
             self.conn.commit()
