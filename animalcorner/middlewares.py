@@ -4,6 +4,7 @@
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
 from scrapy import signals
+import random
 
 # useful for handling different item types with a single interface
 from itemadapter import is_item, ItemAdapter
@@ -61,12 +62,15 @@ class AnimalcornerDownloaderMiddleware:
     # scrapy acts as if the downloader middleware does not modify the
     # passed objects.
 
+    def __init__(self, proxy_list):
+        self.proxy_list = proxy_list
+
     @classmethod
     def from_crawler(cls, crawler):
         # This method is used by Scrapy to create your spiders.
-        s = cls()
-        crawler.signals.connect(s.spider_opened, signal=signals.spider_opened)
-        return s
+        #s = cls()
+        #crawler.signals.connect(s.spider_opened, signal=signals.spider_opened)
+        return cls(proxy_list=crawler.settings.get('ROTATING_PROXY_LIST'))
 
     def process_request(self, request, spider):
         # Called for each request that goes through the downloader
@@ -78,7 +82,8 @@ class AnimalcornerDownloaderMiddleware:
         # - or return a Request object
         # - or raise IgnoreRequest: process_exception() methods of
         #   installed downloader middleware will be called
-        return None
+        proxy = random.choice(self.proxy_list)
+        request.meta['proxy'] = proxy
 
     def process_response(self, request, response, spider):
         # Called with the response returned from the downloader.
