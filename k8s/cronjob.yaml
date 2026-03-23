@@ -1,0 +1,57 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: animalcorner-scraper
+  namespace: default
+  labels:
+    app: animalcorner-scraper
+spec:
+  schedule: "0 0 * * *"
+  timeZone: "Asia/Jakarta"
+  suspend: false
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 1800
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      ttlSecondsAfterFinished: 86400
+      activeDeadlineSeconds: 3600
+      template:
+        metadata:
+          labels:
+            app: animalcorner-scraper
+        spec:
+          securityContext:
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+          restartPolicy: OnFailure
+          containers:
+            - name: scraper
+              image: ghcr.io/your-org/animalcorner-scraper:1.0.0
+              imagePullPolicy: IfNotPresent
+              command: ["scrapy"]
+              args: ["crawl", "animals"]
+              envFrom:
+                - configMapRef:
+                    name: animalcorner-config
+                - secretRef:
+                    name: animalcorner-secret
+              env:
+                - name: SCRAPY_LOG_LEVEL
+                  value: "INFO"
+                - name: SCRAPY_RUN_LOGS_DIR
+                  value: "/app/logs"
+              resources:
+                requests:
+                  cpu: "100m"
+                  memory: "128Mi"
+                limits:
+                  cpu: "500m"
+                  memory: "512Mi"
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: ["ALL"]
