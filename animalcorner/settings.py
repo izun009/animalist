@@ -73,9 +73,12 @@ DOWNLOAD_DELAY = 5
 
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
-#EXTENSIONS = {
-#    "scrapy.extensions.telnet.TelnetConsole": None,
-#}
+EXTENSIONS = {
+    "animalcorner.extensions.RunFileLoggerExtension": 500,
+}
+
+LOG_LEVEL = os.getenv("SCRAPY_LOG_LEVEL", "INFO")
+RUN_LOGS_DIR = os.getenv("SCRAPY_RUN_LOGS_DIR", "logs")
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html

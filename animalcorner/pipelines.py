@@ -1,3 +1,4 @@
+import logging
 import psycopg2
 from datetime import datetime
 from scrapy.exceptions import DropItem
@@ -8,7 +9,8 @@ load_dotenv()
 
 class PostgresPipeline:
 
-    def __init__(self):
+    def __init__(self, crawler=None):
+        self.crawler = crawler
         self.conn = psycopg2.connect(
             host=os.getenv("DB_HOST"),
             dbname=os.getenv("DB_NAME"),
@@ -18,9 +20,14 @@ class PostgresPipeline:
         )
         self.cur = self.conn.cursor()
 
-    def process_item(self, item, spider):
+    @classmethod
+    def from_crawler(cls, crawler):
+        return cls(crawler=crawler)
+
+    def process_item(self, item, spider=None):
         now = datetime.utcnow()
         DEFAULT_OWNER_ID = 1
+        spider = spider or getattr(self.crawler, "spider", None)
 
         intro = item.get("introduction")
         if isinstance(intro, dict):
@@ -33,8 +40,8 @@ class PostgresPipeline:
                 INSERT INTO animals (name, endpoint, introduction, owner_id, created_at, updated_at)
                 VALUES (%s, %s, %s, %s, %s, %s)
                 ON CONFLICT (endpoint)
-                DO UPDATE SET updated_at = EXCLUDED.updated_at
-                RETURNING a_id
+                DO NOTHING
+                RETURNING id
             """, (
                 item["name"],
                 item["endpoint"],
@@ -46,6 +53,8 @@ class PostgresPipeline:
 
             result = self.cur.fetchone()
             if not result:
+                logger = spider.logger if spider else logging.getLogger(__name__)
+                logger.info(f"Skipping existing animal: {item['endpoint']}")
                 raise DropItem(f"Animal already exists: {item['endpoint']}")
 
             animal_id = result[0]
@@ -94,10 +103,11 @@ class PostgresPipeline:
             raise
 
         except Exception as e:
-            spider.logger.error(f"DB error: {e}")
+            logger = spider.logger if spider else logging.getLogger(__name__)
+            logger.error(f"DB error: {e}")
             self.conn.rollback()
             raise DropItem("Database error")
 
-    def close_spider(self, spider):
+    def close_spider(self, spider=None):
         self.cur.close()
         self.conn.close()
