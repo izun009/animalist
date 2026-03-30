@@ -1,6 +1,4 @@
--- ============================================================
 -- USERS
--- ============================================================
 CREATE TABLE IF NOT EXISTS users (
     id              BIGINT AUTO_INCREMENT PRIMARY KEY,
     email           VARCHAR(255) NOT NULL UNIQUE,
@@ -10,9 +8,7 @@ CREATE TABLE IF NOT EXISTS users (
     created_at      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
--- ============================================================
 -- ANIMALS
--- ============================================================
 CREATE TABLE IF NOT EXISTS animals (
     id           BIGINT AUTO_INCREMENT PRIMARY KEY,
     name         VARCHAR(255) NOT NULL,
@@ -36,9 +32,7 @@ CREATE TABLE IF NOT EXISTS animals (
     KEY idx_animals_owner_id (owner_id)
 ) ENGINE=InnoDB;
 
--- ============================================================
 -- ANIMAL FACTS
--- ============================================================
 CREATE TABLE IF NOT EXISTS animal_facts (
     id          BIGINT AUTO_INCREMENT PRIMARY KEY,
     animal_id   BIGINT NOT NULL,
@@ -57,9 +51,7 @@ CREATE TABLE IF NOT EXISTS animal_facts (
     KEY idx_animal_facts_animal_id (animal_id)
 ) ENGINE=InnoDB;
 
--- ============================================================
 -- ANIMAL IMAGES
--- ============================================================
 CREATE TABLE IF NOT EXISTS animal_images (
     id          BIGINT AUTO_INCREMENT PRIMARY KEY,
     animal_id   BIGINT NOT NULL,

@@ -2,7 +2,7 @@ apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: animalcorner-scraper
-  namespace: default
+  namespace: animals
   labels:
     app: animalcorner-scraper
 spec:
@@ -30,7 +30,7 @@ spec:
           restartPolicy: OnFailure
           containers:
             - name: scraper
-              image: ghcr.io/your-org/animalcorner-scraper:1.0.0
+              image: izzun/animals:latest
               imagePullPolicy: IfNotPresent
               command: ["scrapy"]
               args: ["crawl", "animals"]

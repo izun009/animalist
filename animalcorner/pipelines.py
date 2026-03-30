@@ -119,11 +119,11 @@ class MySQLPipeline:
     def __init__(self, crawler=None):
         self.crawler = crawler
         self.conn = pymysql.connect(
-            host=os.getenv("MYSQL_DB_HOST"),
-            database=os.getenv("MYSQL_DB_NAME"),
-            user=os.getenv("MYSQL_DB_USER"),
-            password=os.getenv("MYSQL_DB_PASS"),
-            port=int(os.getenv("MYSQL_DB_PORT", 3306))
+            host=os.getenv("DB_HOST"),
+            database=os.getenv("DB_NAME"),
+            user=os.getenv("DB_USER"),
+            password=os.getenv("DB_PASS"),
+            port=int(os.getenv("DB_PORT", 3306))
         )
         self.cur = self.conn.cursor()
 

@@ -2,22 +2,22 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: animalcorner-config
-  namespace: default
+  namespace: animals
   labels:
     app: animalcorner-scraper
 data:
-  DB_HOST: "postgres-service"
-  DB_PORT: "5432"
-  DB_NAME: "db"
-  DB_USER: "postgres"
+  DB_HOST: "mysql-service"
+  DB_PORT: "3306"
+  DB_NAME: "animalsdb"
+  DB_USER: "vanzuu"
 ---
 apiVersion: v1
 kind: Secret
 metadata:
   name: animalcorner-secret
-  namespace: default
+  namespace: animals
   labels:
     app: animalcorner-scraper
 type: Opaque
-stringData:
-  DB_PASS: "replace-with-your-secure-password"
+data:
+  DB_PASS: "QzBnTjF6M3N0ITIzMTJxd2FzengK"
