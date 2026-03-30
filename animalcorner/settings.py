@@ -85,8 +85,8 @@ RUN_LOGS_DIR = os.getenv("SCRAPY_RUN_LOGS_DIR", "logs")
 ITEM_PIPELINES = {
    #"animalcorner.pipelines.MongoDBPipeline": 300,
    #"animalcorner.pipelines.DuplicatesPipeline": 300,
-   #"animalcorner.pipelines.MySQLPipeline": 300,
-   "animalcorner.pipelines.PostgresPipeline": 300
+   #"animalcorner.pipelines.PostgresPipeline": 300,
+   "animalcorner.pipelines.MySQLPipeline": 300
 }
 
 #MONGODB_URI = 'mongodb://izzun:1234@0.0.0.0:27017/?directConnection=true'

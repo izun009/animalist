@@ -10,9 +10,6 @@ CREATE TABLE IF NOT EXISTS users (
     created_at      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
-CREATE INDEX IF NOT EXISTS idx_users_email
-    ON users(email);
-
 -- ============================================================
 -- ANIMALS
 -- ============================================================
@@ -34,11 +31,10 @@ CREATE TABLE IF NOT EXISTS animals (
         CHECK (CHAR_LENGTH(name) > 1),
 
     CONSTRAINT chk_animals_endpoint
-        CHECK (CHAR_LENGTH(endpoint) > 1)
-) ENGINE=InnoDB;
+        CHECK (CHAR_LENGTH(endpoint) > 1),
 
-CREATE INDEX IF NOT EXISTS idx_animals_owner_id
-    ON animals(owner_id);
+    KEY idx_animals_owner_id (owner_id)
+) ENGINE=InnoDB;
 
 -- ============================================================
 -- ANIMAL FACTS
@@ -56,11 +52,10 @@ CREATE TABLE IF NOT EXISTS animal_facts (
         ON DELETE CASCADE,
 
     CONSTRAINT uq_animal_fact_position
-        UNIQUE (animal_id, position)
-) ENGINE=InnoDB;
+        UNIQUE (animal_id, position),
 
-CREATE INDEX IF NOT EXISTS idx_animal_facts_animal_id
-    ON animal_facts (animal_id);
+    KEY idx_animal_facts_animal_id (animal_id)
+) ENGINE=InnoDB;
 
 -- ============================================================
 -- ANIMAL IMAGES
@@ -77,8 +72,7 @@ CREATE TABLE IF NOT EXISTS animal_images (
         ON DELETE CASCADE,
 
     CONSTRAINT uq_animal_image_position
-        UNIQUE (animal_id, position)
-) ENGINE=InnoDB;
+        UNIQUE (animal_id, position),
 
-CREATE INDEX IF NOT EXISTS idx_animal_images_animal_id
-    ON animal_images (animal_id);
+    KEY idx_animal_images_animal_id (animal_id)
+) ENGINE=InnoDB;
