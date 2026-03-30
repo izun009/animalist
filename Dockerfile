@@ -21,14 +21,15 @@ RUN python -m pip install --upgrade pip \
 COPY . .
 
 RUN adduser \
+    --uid 1001 \
     --disabled-password \
     --gecos "" \
     --home "/nonexistent" \
     --shell "/usr/sbin/nologin" \
     --no-create-home \
     appuser \
-    && chown -R appuser:appuser /app
+    && chown -R 1001:1001 /app
 
-USER appuser
+USER 1001:1001
 
 CMD ["scrapy", "crawl", "animals"]

@@ -6,7 +6,7 @@ metadata:
   labels:
     app: animalcorner-scraper
 data:
-  DB_HOST: "mysql-service"
+  DB_HOST: "mysql-default-svc.db.svc.cluster.local"
   DB_PORT: "3306"
   DB_NAME: "animalsdb"
   DB_USER: "vanzuu"
